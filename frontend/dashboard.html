@@ -41,22 +41,7 @@
 
             <!-- Stats Cards -->
             <div class="row g-4 mb-4">
-                <div class="col-md-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <p class="text-muted mb-1">My Matches</p>
-                                    <h3 class="mb-0" id="matchCount">-</h3>
-                                </div>
-                                <div class="text-primary">
-                                    <i class="fas fa-heart fa-2x"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
@@ -71,7 +56,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
@@ -86,7 +71,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
@@ -103,55 +88,41 @@
                 </div>
             </div>
 
+            <!-- Quick Links -->
             <div class="row g-4">
-                <!-- AI Recommended Matches -->
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0">
-                                <i class="fas fa-brain text-primary"></i> AI Recommended Matches
-                            </h5>
-                        </div>
-                        <div class="card-body" id="matchesContainer">
-                            <div class="text-center py-4">
-                                <div class="spinner"></div>
-                                <p class="text-muted mt-2">Finding your perfect matches...</p>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                            <h5>Find Partners</h5>
+                            <p class="text-muted">Discover people with similar interests</p>
+                            <a href="search.html" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Start Searching
+                            </a>
                         </div>
                     </div>
                 </div>
-
-                <!-- Recommended Groups -->
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0">
-                                <i class="fas fa-users text-success"></i> Recommended Groups
-                            </h5>
-                        </div>
-                        <div class="card-body" id="groupsContainer">
-                            <div class="text-center py-4">
-                                <div class="spinner"></div>
-                                <p class="text-muted mt-2">Finding groups for you...</p>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x text-success mb-3"></i>
+                            <h5>Join Communities</h5>
+                            <p class="text-muted">Connect with groups that match your interests</p>
+                            <a href="groups.html" class="btn btn-success">
+                                <i class="fas fa-users"></i> Browse Groups
+                            </a>
                         </div>
                     </div>
                 </div>
-
-                <!-- Upcoming Events -->
-                <div class="col-lg-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-calendar text-warning"></i> Upcoming Events
-                            </h5>
-                            <a href="events.html" class="btn btn-sm btn-outline-primary">View All</a>
-                        </div>
-                        <div class="card-body" id="eventsContainer">
-                            <div class="text-center py-4">
-                                <div class="spinner"></div>
-                                <p class="text-muted mt-2">Loading events...</p>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar fa-3x text-warning mb-3"></i>
+                            <h5>Discover Events</h5>
+                            <p class="text-muted">Find meetups and activities near you</p>
+                            <a href="events.html" class="btn btn-warning">
+                                <i class="fas fa-calendar"></i> View Events
+                            </a>
                         </div>
                     </div>
                 </div>

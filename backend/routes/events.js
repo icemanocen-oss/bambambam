@@ -11,6 +11,17 @@ router.post('/', authMiddleware, async (req, res) => {
   try {
     const { title, description, location, date, duration, maxParticipants, category, isOnline, meetingLink, groupId } = req.body;
 
+    // Validate date
+    const eventDate = new Date(date);
+    if (isNaN(eventDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    // Check if date is in the future
+    if (eventDate < new Date()) {
+      return res.status(400).json({ error: 'Event date must be in the future' });
+    }
+
     // Validate group if provided
     if (groupId) {
       const group = await Group.findById(groupId);
@@ -28,7 +39,7 @@ router.post('/', authMiddleware, async (req, res) => {
       organizer: req.user._id,
       group: groupId || null,
       location,
-      date,
+      date: eventDate,
       duration: duration || 60,
       maxParticipants: maxParticipants || 20,
       category,
@@ -45,7 +56,7 @@ router.post('/', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error('Create event error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error: ' + error.message });
   }
 });
 

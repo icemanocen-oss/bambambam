@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - InterestConnect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .chat-layout {
+            height: calc(100vh - 40px);
+            display: flex;
+        }
+        .conversations-list {
+            width: 350px;
+            border-right: 1px solid #dee2e6;
+            overflow-y: auto;
+            background: white;
+        }
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+        .chat-header {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .chat-input-container {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #dee2e6;
+        }
+        .conversation-item {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .conversation-item:hover {
+            background: #f8f9fa;
+        }
+        .conversation-item.active {
+            background: #e3f2fd;
+        }
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        .message.sent {
+            justify-content: flex-end;
+        }
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .message.sent .message-bubble {
+            background: #0d6efd;
+            color: white;
+        }
+        .typing-indicator {
+            padding: 10px;
+            font-style: italic;
+            color: #6c757d;
+        }
+        .online-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+            border: 2px solid white;
+        }
+        .online-status.online {
+            background: #28a745;
+        }
+        .online-status.offline {
+            background: #6c757d;
+        }
+        .empty-chat {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar">
+        <div class="text-center mb-4 px-3">
+            <h5 class="fw-bold"><i class="fas fa-users-line text-primary"></i> InterestConnect</h5>
+            <small class="text-muted user-email"></small>
+        </div>
+        
+        <ul class="sidebar-menu px-3">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="search.html"><i class="fas fa-search"></i> Find Partners</a></li>
+            <li><a href="groups.html"><i class="fas fa-users"></i> Groups</a></li>
+            <li><a href="events.html"><i class="fas fa-calendar"></i> Events</a></li>
+            <li><a href="chat.html" class="active"><i class="fas fa-comments"></i> Messages</a></li>
+        </ul>
+        
+        <div class="px-3 mt-4">
+            <button class="btn btn-outline-danger w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <div class="chat-layout">
+            <!-- Conversations List -->
+            <div class="conversations-list">
+                <div class="p-3 border-bottom">
+                    <h5 class="mb-3">Messages</h5>
+                    <input type="text" class="form-control" id="searchConversations" placeholder="Search conversations...">
+                </div>
+                <div id="conversationsList">
+                    <div class="text-center py-5">
+                        <div class="spinner"></div>
+                        <p class="text-muted mt-2">Loading conversations...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-main" id="chatMain">
+                <div class="empty-chat">
+                    <div class="text-center">
+                        <i class="fas fa-comments fa-4x mb-3"></i>
+                        <h5>Select a conversation to start chatting</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>

@@ -113,20 +113,13 @@ function displayGroups(groups) {
                             <button class="btn btn-sm btn-outline-primary flex-fill" onclick="viewGroupDetails('${group._id}')">
                                 <i class="fas fa-eye"></i> View Details
                             </button>
-                            ${!isMember && !isCreator ? 
+                            ${!isMember ? 
                                 `<button class="btn btn-sm btn-success flex-fill" onclick="joinGroup('${group._id}')">
                                     <i class="fas fa-plus"></i> JOIN COMMUNITY
-                                </button>` : ''
-                            }
-                            ${isMember && !isCreator ? 
+                                </button>` : 
                                 `<button class="btn btn-sm btn-danger flex-fill" onclick="leaveGroup('${group._id}')">
                                     <i class="fas fa-sign-out-alt"></i> Leave
-                                </button>` : ''
-                            }
-                            ${isCreator ? 
-                                `<button class="btn btn-sm btn-secondary flex-fill" disabled>
-                                    <i class="fas fa-crown"></i> Creator
-                                </button>` : ''
+                                </button>`
                             }
                         </div>
                     </div>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - InterestConnect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar">
+        <div class="text-center mb-4 px-3">
+            <h5 class="fw-bold"><i class="fas fa-users-line text-primary"></i> InterestConnect</h5>
+            <small class="text-muted user-email"></small>
+        </div>
+        
+        <ul class="sidebar-menu px-3">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="search.html"><i class="fas fa-search"></i> Find Partners</a></li>
+            <li><a href="groups.html"><i class="fas fa-users"></i> Groups</a></li>
+            <li><a href="events.html" class="active"><i class="fas fa-calendar"></i> Events</a></li>
+            <li><a href="chat.html"><i class="fas fa-comments"></i> Messages</a></li>
+        </ul>
+        
+        <div class="px-3 mt-4">
+            <button class="btn btn-outline-danger w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-calendar"></i> Events & Meetups</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
+                    <i class="fas fa-plus"></i> Create Event
+                </button>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4" id="eventTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">
+                        All Events
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="my-tab" data-bs-toggle="tab" data-bs-target="#my" type="button">
+                        My Events
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="eventTabsContent">
+                <!-- All Events Tab -->
+                <div class="tab-pane fade show active" id="all" role="tabpanel">
+                    <!-- Filters -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <select class="form-select" id="categoryFilter">
+                                        <option value="">All Categories</option>
+                                        <option value="study">Study</option>
+                                        <option value="sports">Sports</option>
+                                        <option value="arts">Arts</option>
+                                        <option value="technology">Technology</option>
+                                        <option value="business">Business</option>
+                                        <option value="social">Social</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="typeFilter">
+                                        <option value="">Online & Offline</option>
+                                        <option value="true">Online Only</option>
+                                        <option value="false">Offline Only</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-primary w-100" onclick="loadEvents()">
+                                        <i class="fas fa-filter"></i> Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Events List -->
+                    <div id="eventsContainer">
+                        <div class="text-center py-5">
+                            <div class="spinner"></div>
+                            <p class="text-muted mt-2">Loading events...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Events Tab -->
+                <div class="tab-pane fade" id="my" role="tabpanel">
+                    <div id="myEventsContainer">
+                        <div class="text-center py-5">
+                            <div class="spinner"></div>
+                            <p class="text-muted mt-2">Loading your events...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Event Modal -->
+    <div class="modal fade" id="createEventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createEventForm">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="eventTitle" class="form-label">Event Title</label>
+                                <input type="text" class="form-control" id="eventTitle" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="eventDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="eventCategory" class="form-label">Category</label>
+                                <select class="form-select" id="eventCategory" required>
+                                    <option value="study">Study</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="arts">Arts</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="business">Business</option>
+                                    <option value="social">Social</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="eventDate" class="form-label">Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="eventDate" required>
+                                <small class="text-muted">Event must be in the future</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="eventDuration" class="form-label">Duration (minutes)</label>
+                                <input type="number" class="form-control" id="eventDuration" value="60" min="15" max="480">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="eventMaxParticipants" class="form-label">Max Participants</label>
+                                <input type="number" class="form-control" id="eventMaxParticipants" value="20" min="2" max="100">
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="isOnline">
+                            <label class="form-check-label" for="isOnline">
+                                Online Event
+                            </label>
+                        </div>
+                        <div class="mb-3" id="locationField">
+                            <label for="eventLocation" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="eventLocation" placeholder="Enter venue or address" required>
+                        </div>
+                        <div class="mb-3" id="linkField" style="display: none;">
+                            <label for="meetingLink" class="form-label">Meeting Link</label>
+                            <input type="url" class="form-control" id="meetingLink" placeholder="https://zoom.us/...">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createEventBtn">Create Event</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventDetailsTitle">Event Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="eventDetailsContent">
+                    <!-- Content loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/events.js"></script>
+</body>
+</html>

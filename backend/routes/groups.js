@@ -172,14 +172,28 @@ router.post('/:id/leave', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Not a member of this group' });
     }
 
-    // Cannot leave if creator
-    if (group.creator.toString() === req.user._id.toString()) {
-      return res.status(400).json({ error: 'Creator cannot leave the group. Delete the group instead.' });
-    }
-
     // Remove user from group
     group.members = group.members.filter(m => m.toString() !== req.user._id.toString());
     group.admins = group.admins.filter(a => a.toString() !== req.user._id.toString());
+    
+    // If creator leaves and there are other members, assign new creator
+    if (group.creator.toString() === req.user._id.toString() && group.members.length > 0) {
+      group.creator = group.members[0];
+      if (!group.admins.includes(group.members[0])) {
+        group.admins.push(group.members[0]);
+      }
+    }
+    
+    // If no members left, delete the group
+    if (group.members.length === 0) {
+      await Group.findByIdAndDelete(req.params.id);
+      await User.updateMany(
+        { joinedGroups: req.params.id },
+        { $pull: { joinedGroups: req.params.id } }
+      );
+      return res.json({ message: 'Group deleted as last member left' });
+    }
+    
     await group.save();
 
     // Remove group from user's joined groups

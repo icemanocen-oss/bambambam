@@ -51,6 +51,11 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Group'
   }],
+  // Friends system
+  friends: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   blockedUsers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

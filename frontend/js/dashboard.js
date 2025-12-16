@@ -1,21 +1,14 @@
 // Dashboard functionality
 
+// Dashboard functionality
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboardData();
 });
 
 async function loadDashboardData() {
     try {
-        // Load matches
-        loadMatches();
-        
-        // Load recommended groups
-        loadRecommendedGroups();
-        
-        // Load upcoming events
-        loadUpcomingEvents();
-        
-        // Load stats
+        // Load stats only
         loadStats();
         
         // Load unread message count

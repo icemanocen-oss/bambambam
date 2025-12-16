@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Partners - InterestConnect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar">
+        <div class="text-center mb-4 px-3">
+            <h5 class="fw-bold"><i class="fas fa-users-line text-primary"></i> InterestConnect</h5>
+            <small class="text-muted user-email"></small>
+        </div>
+        
+        <ul class="sidebar-menu px-3">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="search.html" class="active"><i class="fas fa-search"></i> Find Partners</a></li>
+            <li><a href="groups.html"><i class="fas fa-users"></i> Groups</a></li>
+            <li><a href="events.html"><i class="fas fa-calendar"></i> Events</a></li>
+            <li><a href="chat.html"><i class="fas fa-comments"></i> Messages</a></li>
+        </ul>
+        
+        <div class="px-3 mt-4">
+            <button class="btn btn-outline-danger w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <div class="container-fluid">
+            <h2 class="mb-4"><i class="fas fa-search"></i> Find Your Perfect Match</h2>
+            
+            <div id="alert-container"></div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4" id="searchTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="matches-tab" data-bs-toggle="tab" data-bs-target="#matches" type="button">
+                        <i class="fas fa-brain"></i> AI Matches
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="friends-tab" data-bs-toggle="tab" data-bs-target="#friends" type="button">
+                        <i class="fas fa-user-friends"></i> My Friends
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="suggestions-tab" data-bs-toggle="tab" data-bs-target="#suggestions" type="button">
+                        <i class="fas fa-lightbulb"></i> Suggestions
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="searchTabsContent">
+                <!-- AI Matches Tab -->
+                <div class="tab-pane fade show active" id="matches" role="tabpanel">
+                    <div class="row" id="matchesContainer">
+                        <div class="col-12 text-center py-5">
+                            <div class="spinner"></div>
+                            <p class="text-muted mt-2">Finding your perfect matches...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Tab -->
+                <div class="tab-pane fade" id="search" role="tabpanel">
+                    <!-- Search Filters -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" id="searchQuery" placeholder="Search by name or interests...">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="userTypeFilter">
+                                        <option value="">All Types</option>
+                                        <option value="student">Students</option>
+                                        <option value="professional">Professionals</option>
+                                        <option value="hobbyist">Hobbyists</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="interestsFilter" placeholder="Filter by interests...">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary w-100" onclick="searchUsers()">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="searchResults">
+                        <div class="col-12 text-center py-5 text-muted">
+                            <i class="fas fa-search fa-4x mb-3"></i>
+                            <p>Enter search criteria to find users</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Friends Tab -->
+                <div class="tab-pane fade" id="friends" role="tabpanel">
+                    <div class="row" id="friendsContainer">
+                        <div class="col-12 text-center py-5">
+                            <div class="spinner"></div>
+                            <p class="text-muted mt-2">Loading your friends...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Friend Suggestions Tab -->
+                <div class="tab-pane fade" id="suggestions" role="tabpanel">
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb"></i> These suggestions are based on mutual friends and common interests
+                    </div>
+                    <div class="row" id="suggestionsContainer">
+                        <div class="col-12 text-center py-5">
+                            <div class="spinner"></div>
+                            <p class="text-muted mt-2">Finding friend suggestions...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>

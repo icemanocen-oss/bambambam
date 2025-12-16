@@ -23,8 +23,6 @@ function displayProfile(profile) {
     document.getElementById('displayName').textContent = profile.name;
     document.getElementById('displayEmail').textContent = profile.email;
     document.getElementById('displayUserType').textContent = profile.userType.charAt(0).toUpperCase() + profile.userType.slice(1);
-    document.getElementById('joinedDate').textContent = formatDate(profile.createdAt);
-    document.getElementById('lastActive').textContent = timeAgo(profile.lastActive);
     
     // Update profile image
     document.getElementById('profileImage').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&size=150&background=random`;
@@ -37,11 +35,6 @@ function displayProfile(profile) {
     document.getElementById('bio').value = profile.bio || '';
     document.getElementById('interests').value = profile.interests?.join(', ') || '';
     document.getElementById('skills').value = profile.skills?.join(', ') || '';
-    
-    // Privacy settings
-    document.getElementById('showEmail').checked = profile.privacySettings?.showEmail || false;
-    document.getElementById('showAge').checked = profile.privacySettings?.showAge !== false;
-    document.getElementById('showLocation').checked = profile.privacySettings?.showLocation !== false;
     
     // Display tags
     displayTags(profile.interests, 'interestTags');

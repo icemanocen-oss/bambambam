@@ -36,7 +36,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/messages', require('./routes/messages'));
-
+app.use('/api/friends', require('./routes/friends')); // NEW: Friends route
 
 // Root route
 app.get('/', (req, res) => {
@@ -48,7 +48,8 @@ app.get('/', (req, res) => {
       users: '/api/users (profile, search, matches)',
       groups: '/api/groups (create, join, search)',
       events: '/api/events (create, join, browse)',
-      messages: '/api/messages (chat)'
+      messages: '/api/messages (chat)',
+      friends: '/api/friends (add, remove, list)' // NEW
     }
   });
 });
@@ -81,7 +82,7 @@ io.on('connection', (socket) => {
   // Add user to active users
   activeUsers.set(socket.userId, socket.id);
   
-  // Broadcast online status
+  // Broadcast online status to all users
   io.emit('user_online', { userId: socket.userId });
 
   // Join personal room
@@ -149,6 +150,8 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log(`❌ User disconnected: ${socket.userId}`);
     activeUsers.delete(socket.userId);
+    
+    // Broadcast offline status to all users
     io.emit('user_offline', { userId: socket.userId });
   });
 });
