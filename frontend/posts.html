@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed - InterestConnect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .post-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .post-header {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .post-content {
+            padding: 15px;
+            word-wrap: break-word;
+        }
+        .post-actions {
+            padding: 10px 15px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            gap: 15px;
+        }
+        .post-action-btn {
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .post-action-btn:hover {
+            color: #0d6efd;
+        }
+        .post-action-btn.active {
+            color: #0d6efd;
+        }
+        .comment-section {
+            border-top: 1px solid #dee2e6;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .comment {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-content {
+            flex: 1;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .create-post {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar">
+        <div class="text-center mb-4 px-3">
+            <h5 class="fw-bold"><i class="fas fa-users-line text-primary"></i> InterestConnect</h5>
+            <small class="text-muted user-email"></small>
+        </div>
+        
+        <ul class="sidebar-menu px-3">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="posts.html" class="active"><i class="fas fa-newspaper"></i> Feed</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="search.html"><i class="fas fa-search"></i> Find Partners</a></li>
+            <li><a href="groups.html"><i class="fas fa-users"></i> Groups</a></li>
+            <li><a href="events.html"><i class="fas fa-calendar"></i> Events</a></li>
+            <li><a href="chat.html"><i class="fas fa-comments"></i> Messages</a></li>
+            <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications <span class="badge bg-danger" id="notifBadge"></span></a></li>
+        </ul>
+        
+        <div class="px-3 mt-4">
+            <button class="btn btn-outline-danger w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <div class="container-fluid">
+            <h2 class="mb-4"><i class="fas fa-newspaper"></i> Your Feed</h2>
+            
+            <div id="alert-container"></div>
+
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <!-- Create Post -->
+                    <div class="create-post">
+                        <h5 class="mb-3">Create a Post</h5>
+                        <form id="createPostForm">
+                            <textarea class="form-control mb-3" id="postContent" rows="3" 
+                                      placeholder="What's on your mind?" required maxlength="5000"></textarea>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted" id="charCount">0/5000</small>
+                                <button type="submit" class="btn btn-primary" id="postBtn">
+                                    <i class="fas fa-paper-plane"></i> Post
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Posts Feed -->
+                    <div id="postsContainer">
+                        <div class="text-center py-5">
+                            <div class="spinner"></div>
+                            <p class="text-muted mt-2">Loading feed...</p>
+                        </div>
+                    </div>
+
+                    <!-- Load More -->
+                    <div class="text-center mb-4" id="loadMoreContainer" style="display: none;">
+                        <button class="btn btn-outline-primary" onclick="loadMorePosts()">
+                            <i class="fas fa-arrow-down"></i> Load More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/posts.js"></script>
+    <script src="js/notifications.js"></script>
+</body>
+</html>

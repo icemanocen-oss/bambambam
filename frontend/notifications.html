@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - InterestConnect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .notification-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: start;
+            gap: 15px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+        .notification-item.unread {
+            background: #e3f2fd;
+        }
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .notification-icon.friend_request,
+        .notification-icon.friend_accept {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .notification-icon.post_like {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+        .notification-icon.post_comment {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .notification-icon.message {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar">
+        <div class="text-center mb-4 px-3">
+            <h5 class="fw-bold"><i class="fas fa-users-line text-primary"></i> InterestConnect</h5>
+            <small class="text-muted user-email"></small>
+        </div>
+        
+        <ul class="sidebar-menu px-3">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="posts.html"><i class="fas fa-newspaper"></i> Feed</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="search.html"><i class="fas fa-search"></i> Find Partners</a></li>
+            <li><a href="groups.html"><i class="fas fa-users"></i> Groups</a></li>
+            <li><a href="events.html"><i class="fas fa-calendar"></i> Events</a></li>
+            <li><a href="chat.html"><i class="fas fa-comments"></i> Messages</a></li>
+            <li><a href="notifications.html" class="active"><i class="fas fa-bell"></i> Notifications</a></li>
+        </ul>
+        
+        <div class="px-3 mt-4">
+            <button class="btn btn-outline-danger w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-bell"></i> Notifications</h2>
+                <button class="btn btn-outline-primary" onclick="markAllRead()">
+                    <i class="fas fa-check-double"></i> Mark All as Read
+                </button>
+            </div>
+            
+            <div id="alert-container"></div>
+
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div id="notificationsContainer">
+                        <div class="text-center py-5">
+                            <div class="spinner"></div>
+                            <p class="text-muted mt-2">Loading notifications...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        let notifications = [];
+        let socket;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadNotifications();
+            initializeSocket();
+        });
+
+        function initializeSocket() {
+            socket = io(API_BASE_URL, {
+                auth: { token: getToken() }
+            });
+
+            socket.on('connect', () => {
+                console.log('Socket connected for notifications');
+            });
+
+            socket.on('new_notification', (notification) => {
+                // Add to top of list
+                notifications.unshift(notification);
+                displayNotifications(notifications);
+                
+                // Show toast
+                showAlert(`${notification.sender.name} ${notification.content}`, 'info');
+            });
+        }
+
+        async function loadNotifications() {
+            try {
+                const data = await apiRequest('/api/notifications');
+                notifications = data.notifications;
+                displayNotifications(notifications);
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showAlert('Error loading notifications', 'danger');
+            }
+        }
+
+        function displayNotifications(notifList) {
+            const container = document.getElementById('notificationsContainer');
+
+            if (notifList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
+                        <h5 class="text-muted">No notifications</h5>
+                        <p class="text-muted">You're all caught up!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const iconMap = {
+                friend_request: 'fa-user-plus',
+                friend_accept: 'fa-user-check',
+                post_like: 'fa-heart',
+                post_comment: 'fa-comment',
+                message: 'fa-envelope',
+                group_invite: 'fa-users',
+                event_invite: 'fa-calendar'
+            };
+
+            container.innerHTML = notifList.map(notif => `
+                <div class="notification-item ${notif.isRead ? '' : 'unread'}" 
+                     onclick="handleNotificationClick('${notif._id}', '${notif.type}', '${notif.relatedId}')">
+                    <div class="notification-icon ${notif.type}">
+                        <i class="fas ${iconMap[notif.type] || 'fa-bell'}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>${notif.sender?.name || 'System'}</strong>
+                                <span class="text-muted"> ${notif.content}</span>
+                            </div>
+                            <small class="text-muted">${timeAgo(notif.createdAt)}</small>
+                        </div>
+                        ${!notif.isRead ? '<small class="text-primary"><i class="fas fa-circle" style="font-size: 8px;"></i> New</small>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleNotificationClick(notifId, type, relatedId) {
+            try {
+                // Mark as read
+                await apiRequest(`/api/notifications/${notifId}/read`, {
+                    method: 'PUT'
+                });
+
+                // Navigate based on type
+                switch (type) {
+                    case 'post_like':
+                    case 'post_comment':
+                        window.location.href = 'posts.html';
+                        break;
+                    case 'message':
+                        window.location.href = 'chat.html';
+                        break;
+                    case 'friend_request':
+                    case 'friend_accept':
+                        window.location.href = 'search.html';
+                        break;
+                    case 'group_invite':
+                        window.location.href = 'groups.html';
+                        break;
+                    case 'event_invite':
+                        window.location.href = 'events.html';
+                        break;
+                }
+            } catch (error) {
+                console.error('Error handling notification:', error);
+            }
+        }
+
+        async function markAllRead() {
+            try {
+                await apiRequest('/api/notifications/mark-all-read', {
+                    method: 'PUT'
+                });
+
+                showAlert('All notifications marked as read', 'success');
+                await loadNotifications();
+            } catch (error) {
+                showAlert('Error marking notifications as read', 'danger');
+            }
+        }
+    </script>
+</body>
+</html>

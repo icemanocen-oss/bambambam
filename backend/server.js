@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (HTML, CSS, JS)
+// Serve static files
 app.use(express.static('../frontend'));
 
 // MongoDB Connection
@@ -36,31 +36,37 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/messages', require('./routes/messages'));
-app.use('/api/friends', require('./routes/friends')); // NEW: Friends route
+app.use('/api/friends', require('./routes/friends'));
+app.use('/api/posts', require('./routes/posts')); // NEW
+app.use('/api/notifications', require('./routes/notifications')); // NEW
 
 // Root route
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to InterestConnect API',
-    version: '1.0.0',
+    version: '2.0.0',
     endpoints: {
       auth: '/api/auth (register, login)',
       users: '/api/users (profile, search, matches)',
       groups: '/api/groups (create, join, search)',
       events: '/api/events (create, join, browse)',
       messages: '/api/messages (chat)',
-      friends: '/api/friends (add, remove, list)' // NEW
+      friends: '/api/friends (add, remove, list)',
+      posts: '/api/posts (create, like, comment)',
+      notifications: '/api/notifications (get, mark read)'
     }
   });
 });
 
-// Socket.IO for real-time chat
+// Socket.IO Setup
 const Message = require('./models/Message');
+const Notification = require('./models/Notification');
 const jwt = require('jsonwebtoken');
 
-// Store active users
+// Store active users: userId -> socketId
 const activeUsers = new Map();
 
+// Socket.IO Authentication
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
   if (!token) {
@@ -82,13 +88,13 @@ io.on('connection', (socket) => {
   // Add user to active users
   activeUsers.set(socket.userId, socket.id);
   
-  // Broadcast online status to all users
-  io.emit('user_online', { userId: socket.userId });
-
   // Join personal room
   socket.join(socket.userId);
+  
+  // Broadcast online status
+  io.emit('user_status', { userId: socket.userId, status: 'online' });
 
-  // Handle sending messages
+  // Send message
   socket.on('send_message', async (data) => {
     try {
       const { receiverId, groupId, content } = data;
@@ -111,6 +117,22 @@ io.on('connection', (socket) => {
       if (receiverId) {
         io.to(receiverId).emit('new_message', populatedMessage);
         socket.emit('message_sent', populatedMessage);
+        
+        // Create notification
+        const notification = new Notification({
+          recipient: receiverId,
+          sender: socket.userId,
+          type: 'message',
+          content: 'sent you a message',
+          relatedId: message._id,
+          relatedModel: 'Message'
+        });
+        await notification.save();
+        
+        const populatedNotification = await Notification.findById(notification._id)
+          .populate('sender', 'name profilePicture');
+        
+        io.to(receiverId).emit('new_notification', populatedNotification);
       }
 
       // Send to group if group message
@@ -146,13 +168,38 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Send notification (for posts, likes, comments, etc.)
+  socket.on('send_notification', async (data) => {
+    try {
+      const { recipientId, type, content, relatedId, relatedModel } = data;
+      
+      const notification = new Notification({
+        recipient: recipientId,
+        sender: socket.userId,
+        type,
+        content,
+        relatedId,
+        relatedModel
+      });
+      
+      await notification.save();
+      
+      const populatedNotification = await Notification.findById(notification._id)
+        .populate('sender', 'name profilePicture');
+      
+      io.to(recipientId).emit('new_notification', populatedNotification);
+    } catch (error) {
+      console.error('Send notification error:', error);
+    }
+  });
+
   // Handle disconnect
   socket.on('disconnect', () => {
     console.log(`❌ User disconnected: ${socket.userId}`);
     activeUsers.delete(socket.userId);
     
-    // Broadcast offline status to all users
-    io.emit('user_offline', { userId: socket.userId });
+    // Broadcast offline status
+    io.emit('user_status', { userId: socket.userId, status: 'offline' });
   });
 });
 
@@ -173,6 +220,7 @@ server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 API: http://localhost:${PORT}`);
   console.log(`💬 Socket.IO: Ready for real-time connections`);
+  console.log(`🔔 Notifications: Enabled`);
 });
 
 module.exports = { app, io };
